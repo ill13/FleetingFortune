@@ -4,6 +4,10 @@
     "startingGold": 100,
     "inventoryLimit": 15
   },
+  "grid": {
+    "width": 15,
+    "height": 15
+  },
   "worldGeneration": {
     "minLocations": 3,
     "maxLocations": 8

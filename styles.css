@@ -41,6 +41,13 @@
     --border-radius-lg: 8px;
 }
 
+
+
+#canvas {
+  /* transform-origin: top left; */
+  /* CSS will calculate the scale factor */
+}
+
 body {
     margin: 0;
     padding: 0;
