@@ -1,3 +1,175 @@
+All files from 'FleetingFortune'
+Generated: 2025-08-28 14:13:36
+Mode: all
+Included extensions: toml, css, bmp, ts, less, jsx, jpeg, cfg, webp, py, html, ini, gif, yaml, json, txt, vue, js, tiff, scss, yml, svg, png, tsx, sass, jpg
+Tiktoken available: True
+Encoding: cl100k_base
+==================================================
+
+==================================================
+FILE: game_data.json
+MODIFIED: 2025-08-27 21:58:51
+TOKENS: [92m1,426[0m
+==================================================
+
+{
+  "items": [
+    { "id": "fish", "name": "Fish", "emoji": "🐟", "category": "basic", "basePrice": 8 },
+    { "id": "herbs", "name": "Herbs", "emoji": "🌿", "category": "basic", "basePrice": 12 },
+    { "id": "grain", "name": "Grain", "emoji": "🌾", "category": "basic", "basePrice": 6 },
+    { "id": "tools", "name": "Tools", "emoji": "🔨", "category": "quality", "basePrice": 20 },
+    { "id": "cloth", "name": "Cloth", "emoji": "🧵", "category": "quality", "basePrice": 15 },
+    { "id": "pottery", "name": "Pottery", "emoji": "🏺", "category": "quality", "basePrice": 18 },
+    { "id": "gems", "name": "Gems", "emoji": "💎", "category": "premium", "basePrice": 45 },
+    { "id": "artifacts", "name": "Artifacts", "emoji": "🗿", "category": "premium", "basePrice": 55 },
+    { "id": "spices", "name": "Spices", "emoji": "🌶️", "category": "premium", "basePrice": 35 }
+  ],
+  "locationTemplates": [
+    { 
+      "id": "commons", 
+      "name": "The Commons", 
+      "emoji": "🏘️",
+      "description": "A bustling village square where locals gather to trade daily necessities",
+      "flavorText": "\"Fair prices for honest folk\"",
+      "multipliers": { "basic": 0.9, "quality": 1.0, "premium": 1.3 },
+      "travelTime" : 1,
+      "distanceTier": 1
+    },
+    { 
+      "id": "wharf", 
+      "name": "Ocean Wharf", 
+      "emoji": "⚓",
+      "description": "A busy harbor where merchant ships bring fresh catches and exotic goods",
+      "flavorText": "\"Fresh from the morning nets\"",
+      "multipliers": { "basic": 0.7, "quality": 1.1, "premium": 1.4 },
+      "travelTime" : 2,
+      "distanceTier": 2
+    },
+    { 
+      "id": "cottage", 
+      "name": "Bramble Cottage", 
+      "emoji": "🏚️",
+      "description": "An herbalist's home surrounded by wild gardens and drying racks",
+      "flavorText": "\"Picked at dawn when the magic is strongest\"",
+      "multipliers": { "basic": 0.8, "quality": 1.3, "premium": 1.1 },
+       "travelTime" : 1,
+       "distanceTier": 2
+    },
+    { 
+      "id": "peak", 
+      "name": "Dragon's Peak", 
+      "emoji": "⛰️",
+      "description": "A treacherous mountain settlement where treasures are as dangerous as they are valuable",
+      "flavorText": "\"Fortune favors the bold, but demands its price\"",
+      "multipliers": { "basic": 1.4, "quality": 1.2, "premium": 0.8 },
+       "travelTime" : 2,
+       "distanceTier": 4
+    },
+    { 
+      "id": "forge", 
+      "name": "Iron Forge", 
+      "emoji": "⚒️",
+      "description": "A smoky workshop where skilled artisans craft tools and trade materials",
+      "flavorText": "\"Forged with skill, built to last\"",
+      "multipliers": { "basic": 1.1, "quality": 0.8, "premium": 1.2 }, 
+      "travelTime" : 1,
+      "distanceTier": 2
+    },
+    { 
+      "id": "sanctum", 
+      "name": "Crystal Sanctum", 
+      "emoji": "🔮",
+      "description": "A mysterious tower where scholars study ancient artifacts and rare minerals",
+      "flavorText": "\"Knowledge is the rarest treasure of all\"",
+      "multipliers": { "basic": 1.2, "quality": 1.1, "premium": 0.9 },
+      "travelTime" : 1,
+      "distanceTier": 3
+    },
+    { 
+      "id": "crossroads", 
+      "name": "Dusty Crossroads", 
+      "emoji": "🛤️",
+      "description": "A remote trading post where weary travelers rest and merchants meet",
+      "flavorText": "\"All roads lead somewhere, all trades lead here\"",
+      "multipliers": { "basic": 1.0, "quality": 1.0, "premium": 1.0 },
+      "travelTime" : 1,
+      "distanceTier": 2
+    },
+    { 
+      "id": "ruins", 
+      "name": "Ancient Ruins", 
+      "emoji": "🏛️",
+      "description": "Crumbling stones hide forgotten treasures and desperate scavengers",
+      "flavorText": "\"What the old world lost, the new world seeks\"",
+      "multipliers": { "basic": 1.3, "quality": 1.4, "premium": 0.7 },
+      "travelTime" : 1,
+      "distanceTier": 4
+    }
+  ],
+  "categoryLabels": {
+    "basic": "Common",
+    "quality": "Crafted", 
+    "premium": "Rare"
+  },
+  "genericNews": [
+    "🎪 Traveling merchants report good business along the trade routes",
+    "⛈️ Storm clouds gathering - sailors speak of rough seas ahead",
+    "🎭 Festival season brings new opportunities to the markets",
+    "📈 Trade guilds opening new routes through the eastern passes",
+    "🌾 Harvest reports vary wildly from region to region",
+    "⚔️ Rumors of bandits on the mountain roads grow stronger",
+    "🔥 The forges burn bright with increased demand for tools",
+    "🌙 Night merchants whisper of rare finds in distant ruins"
+  ]
+}
+
+==================================================
+FILE: game_rules.json
+MODIFIED: 2025-08-27 21:58:39
+TOKENS: [92m196[0m
+==================================================
+
+{
+  "gameplay": {
+    "maxDays": 30,
+    "startingGold": 100,
+    "inventoryLimit": 15
+  },
+  "grid": {
+    "width": 15,
+    "height": 15
+  },
+  "worldGeneration": {
+    "minLocations": 3,
+    "maxLocations": 8
+  },
+  "pricing": {
+    "seasonal": {
+      "min": 0.8,
+      "range": 0.4
+    },
+    "daily": {
+      "min": 0.9,
+      "range": 0.2
+    },
+    "saturation": {
+      "threshold": 3,
+      "penaltyRate": 0.3,
+      "decayRate": 0.3
+    }
+  },
+  "stock": {
+    "minStock": 5,
+    "stockRange": 15
+  }
+}
+
+==================================================
+FILE: index.html
+MODIFIED: 2025-08-28 14:11:17
+TOKENS: [92m8,975[0m
+==================================================
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -1189,3 +1361,625 @@
     </script>
   </body>
 </html>
+
+==================================================
+FILE: styles.css
+MODIFIED: 2025-08-28 14:11:22
+TOKENS: [92m3,769[0m
+==================================================
+
+:root {
+    /* Theme Variables - Medieval Pack */
+    --theme-bg-primary: linear-gradient(135deg, #1a2f1a, #2d4a2d);
+    --theme-bg-secondary: linear-gradient(135deg, #2d1f0f, #4a3520);
+    --theme-bg-panel: linear-gradient(135deg, #2a2515, #3d3525);
+    --theme-bg-content: rgba(61, 53, 37, 0.9);
+    --theme-bg-item: rgba(42, 37, 21, 0.8);
+    --theme-bg-quest: linear-gradient(135deg, var(--theme-bg-content), rgba(139, 69, 19, 0.2));
+    
+    --theme-border-primary: #6a5a35;
+    --theme-border-accent: #d4af37;
+    --theme-border-quest: #8b4513;
+    
+    --theme-text-primary: #f4e4bc;
+    --theme-text-gold: #ffd700;
+    --theme-text-quest: #deb887;
+    --theme-text-muted: #b8a082;
+    --theme-text-highlight: #98fb98;
+    
+    /* Layout Constants - Don't change these for themes */
+    --header-height: 70px;
+    --panel-padding: 16px;
+    --content-gap: 8px;
+    --border-radius: 6px;
+    --border-width: 2px;
+    --game-padding: 16px;
+    --shadow-game: 0 0 20px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(255,215,0,0.2);
+
+    /* Legacy variables for compatibility */
+    --bg-primary: var(--theme-bg-primary);
+    --bg-secondary: var(--theme-bg-secondary);
+    --bg-tertiary: var(--theme-bg-panel);
+    --bg-panel: var(--theme-bg-panel);
+    --bg-item: var(--theme-bg-item);
+    --bg-news: var(--theme-bg-content);
+    --bg-inventory: var(--theme-bg-item);
+    --border-primary: var(--theme-border-primary);
+    --border-accent: var(--theme-border-accent);
+    --text-primary: var(--theme-text-primary);
+    --text-gold: var(--theme-text-gold);
+    --text-muted: var(--theme-text-muted);
+    --text-highlight: var(--theme-text-highlight);
+}
+
+* { 
+    box-sizing: border-box; 
+}
+
+body {
+    margin: 0;
+    padding: var(--game-padding);
+    font-family: 'Courier New', monospace;
+    background: var(--theme-bg-primary);
+    color: var(--theme-text-primary);
+    overflow: hidden;
+}
+
+/* Game Container */
+.game-container {
+    width: 100%;
+    height: calc(100vh - calc(var(--game-padding) * 2));
+    border: 3px solid var(--theme-border-accent);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--theme-bg-primary);
+    box-shadow: var(--shadow-game);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styles */
+.header {
+    background: var(--theme-bg-secondary);
+    padding: 12px 24px;
+    border-bottom: 3px solid var(--theme-border-accent);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: var(--header-height);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.location-display {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.location-name {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--theme-text-gold);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.location-subtitle {
+    font-size: 0.8rem;
+    color: var(--theme-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.header-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 1rem;
+}
+
+.stat-item {
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.3);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--theme-border-primary);
+}
+
+.stat-label {
+    color: var(--theme-text-muted);
+}
+
+.stat-value {
+    color: var(--theme-text-gold);
+    font-weight: bold;
+}
+
+/* Screen Layout */
+.screen {
+    width: 100%;
+    height: calc(100% - var(--header-height));
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Map Area */
+#mapArea {
+    height: 60%;
+    background: var(--theme-bg-primary);
+    cursor: pointer;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Panels Layout */
+.panels {
+    height: 40%;
+    display: flex;
+}
+
+.panel {
+    padding: var(--panel-padding);
+    background: var(--theme-bg-panel);
+    border: var(--border-width) solid var(--theme-border-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+.news-panel {
+    flex: 2;
+    border-right: 1px solid var(--theme-border-primary);
+}
+
+.inventory-panel {
+    flex: 1;
+}
+
+.panel h3 {
+    margin: 0 0 12px 0;
+    color: var(--theme-text-gold);
+    font-size: 1.1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    border-bottom: var(--border-width) solid var(--theme-border-accent);
+    padding-bottom: 8px;
+}
+
+.panel-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Quest Styling */
+.quest-item {
+    background: var(--theme-bg-quest);
+    border: var(--border-width) solid var(--theme-border-quest);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin: 8px 0;
+    position: relative;
+}
+
+.quest-item::before {
+    content: "📋";
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    background: var(--theme-border-quest);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border: var(--border-width) solid var(--theme-border-accent);
+}
+
+.quest-title {
+    color: var(--theme-text-quest);
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.quest-progress {
+    color: var(--theme-text-highlight);
+    font-size: 0.9rem;
+}
+
+.quest-reward {
+    color: var(--theme-text-muted);
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+/* News Items */
+.news-item {
+    background: var(--theme-bg-content);
+    border: 1px solid var(--theme-border-primary);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    border-left: 4px solid var(--theme-border-accent);
+}
+
+.market-opportunity {
+    border-left-color: var(--theme-text-highlight);
+    background: linear-gradient(135deg, var(--theme-bg-content), rgba(152, 251, 152, 0.1));
+}
+
+/* Inventory */
+.inventory-count {
+    color: var(--theme-text-muted);
+    font-size: 0.9rem;
+}
+
+.inventory-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: var(--theme-bg-item);
+    border-radius: var(--border-radius);
+    margin: 8px 0;
+    border: 1px solid var(--theme-border-primary);
+}
+
+.inventory-item-icon {
+    font-size: 1.2rem;
+}
+
+.inventory-item-text {
+    flex: 1;
+}
+
+.inventory-item-count {
+    color: var(--theme-text-muted);
+    font-size: 0.9rem;
+}
+
+/* Enhanced Trading Screen */
+.trading-screen {
+    padding: var(--panel-padding);
+    background: var(--theme-bg-panel);
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.trading-screen h2 {
+    color: var(--theme-text-gold);
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Inventory Status */
+.inventory-status {
+    background: var(--theme-bg-quest);
+    border: var(--border-width) solid var(--theme-border-quest);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inventory-space {
+    font-weight: bold;
+    color: var(--theme-text-gold);
+}
+
+.quest-hint {
+    color: var(--theme-text-quest);
+    font-size: 0.9rem;
+}
+
+/* Market Insight */
+.market-insight {
+    background: linear-gradient(135deg, var(--theme-bg-content), rgba(152, 251, 152, 0.1));
+    border: 1px solid var(--theme-border-primary);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    border-left: 4px solid var(--theme-text-highlight);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Items Container - scrollable content */
+.items-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    min-height: 0; /* Important for flex scrolling */
+}
+
+/* Enhanced Item Row */
+.item-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 20px;
+    align-items: center;
+    padding: 16px;
+    margin: 8px 0;
+    background: var(--theme-bg-item);
+    border-radius: 8px;
+    border-left: 3px solid var(--theme-border-primary);
+    transition: all 0.2s;
+}
+
+.item-row:hover {
+    transform: translateX(4px);
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Deal quality styling */
+.item-row.good-deal {
+    border-left-color: var(--theme-text-highlight);
+    background: linear-gradient(135deg, var(--theme-bg-item), rgba(152, 251, 152, 0.1));
+}
+
+.item-row.bad-deal {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, var(--theme-bg-item), rgba(220, 53, 69, 0.1));
+}
+
+.item-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.item-icon {
+    font-size: 2rem;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
+.deal-indicator {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 45px;
+    text-align: center;
+}
+
+.deal-great {
+    background: var(--theme-text-highlight);
+    color: var(--theme-bg-primary);
+}
+
+.deal-good {
+    background: rgba(152, 251, 152, 0.7);
+    color: var(--theme-bg-primary);
+}
+
+.deal-poor {
+    background: #dc3545;
+    color: white;
+}
+
+.deal-fair {
+    background: var(--theme-border-primary);
+    color: var(--theme-text-muted);
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-header {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.item-price {
+    color: var(--theme-text-gold);
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-left: 8px;
+}
+
+.item-meta {
+    color: var(--theme-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+.owned-count {
+    color: var(--theme-text-gold);
+    font-weight: bold;
+}
+
+/* Action Controls */
+.buy-controls, .sell-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 120px;
+}
+
+.max-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: linear-gradient(135deg, var(--theme-border-accent), #e6c547);
+    color: var(--theme-bg-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.max-btn:hover {
+    opacity: 0.8;
+}
+
+.max-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--theme-border-primary);
+    color: var(--theme-text-muted);
+}
+
+.quantity-row, .button-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.quantity-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: var(--theme-border-primary);
+    color: var(--theme-text-primary);
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    transition: opacity 0.2s;
+}
+
+.quantity-btn:hover { 
+    opacity: 0.8; 
+}
+
+.quantity-btn:disabled { 
+    opacity: 0.5; 
+    cursor: not-allowed; 
+}
+
+.quantity {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--theme-border-primary);
+    padding: 4px 8px;
+    border-radius: var(--border-radius);
+    min-width: 30px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--theme-text-gold);
+    font-weight: bold;
+}
+
+/* Reusing existing button styles */
+.btn {
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    transition: opacity 0.2s;
+    color: white;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.btn:hover { 
+    opacity: 0.8; 
+}
+
+.btn:disabled { 
+    opacity: 0.5; 
+    cursor: not-allowed; 
+}
+
+.btn-buy { background: #228b22; }
+.btn-sell { background: #cd853f; }
+.btn-back { 
+    background: #8b4513; 
+    padding: 12px 24px;
+    font-size: 1rem;
+}
+
+/* Footer - fixed at bottom */
+.trading-footer {
+    padding: 16px;
+    border-top: var(--border-width) solid var(--theme-border-accent);
+    background: var(--theme-bg-secondary);
+    text-align: center;
+    flex-shrink: 0; /* Prevent footer from shrinking */
+}
+
+/* No stock state */
+.no-stock {
+    opacity: 0.6;
+}
+
+/* Scrollbar styling for items container */
+.items-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.items-container::-webkit-scrollbar-track {
+    background: var(--theme-bg-primary);
+    border-radius: var(--border-radius);
+}
+
+.items-container::-webkit-scrollbar-thumb {
+    background: var(--theme-border-accent);
+    border-radius: var(--border-radius);
+}
+
+.items-container::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-text-gold);
+}
+
+/* Legacy Styles for Backward Compatibility */
+.controls {
+    display: flex;
+    gap: 20px;
+}
+
+.action-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 120px;
+}
+
+.btn-max { 
+    background: #8b4513; 
+}
+
+/* Game Over */
+.game-over {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
