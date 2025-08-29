@@ -1,7 +1,7 @@
 All files from 'FleetingFortune'
-Generated: 2025-08-28 15:22:27
+Generated: 2025-08-28 22:42:05
 Mode: all
-Included extensions: scss, cfg, vue, gif, sass, js, less, txt, webp, bmp, yaml, css, jsx, svg, ts, png, tiff, yml, jpeg, py, toml, ini, html, jpg, tsx, json
+Included extensions: txt, yaml, py, json, gif, cfg, less, jpg, webp, vue, ini, js, html, yml, scss, toml, ts, tsx, bmp, svg, jsx, css, tiff, png, jpeg, sass
 Tiktoken available: True
 Encoding: cl100k_base
 ==================================================
@@ -166,7 +166,7 @@ TOKENS: [92m196[0m
 
 ==================================================
 FILE: index.html
-MODIFIED: 2025-08-28 15:20:07
+MODIFIED: 2025-08-28 22:34:15
 TOKENS: [92m8,995[0m
 ==================================================
 
@@ -1371,12 +1371,12 @@ TOKENS: [92m8,995[0m
   </body>
 </html>
 
-
 ==================================================
 FILE: styles.css
-MODIFIED: 2025-08-28 14:11:22
-TOKENS: [92m3,769[0m
+MODIFIED: 2025-08-28 22:39:04
+TOKENS: [92m3,770[0m
 ==================================================
+
 
 :root {
     /* Theme Variables - Medieval Pack */
@@ -1583,11 +1583,11 @@ canvas {
 .quest-item::before {
     content: "📋";
     position: absolute;
-    top: -8px;
-    left: -8px;
+    top: -10px;
+    left: -2px;
     background: var(--theme-border-quest);
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1992,4 +1992,6 @@ canvas {
     justify-content: center;
     text-align: center;
 }
+
+
 
