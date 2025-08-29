@@ -1,3 +1,12 @@
+
+
+
+What solution best fits our current architecture?
+
+Please walk me through implementing "Command Pattern with Delivery Transaction". Create the new function, show me where to add it, and what else to remove / change. Do this step by step.
+
+
+
 Please do a deep dive on this code. We have some features to discuss.
 
 

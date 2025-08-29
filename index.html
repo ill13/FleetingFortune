@@ -412,34 +412,6 @@
             reward: Math.round(reward),
           };
         }
-
-        static checkQuestDelivery() {
-          if (!game.currentQuest) return;
-
-          const currentLocationName = game.locations[game.location].name;
-          if (currentLocationName !== game.currentQuest.targetLocationName) return;
-
-          const questItemCount = gameState.getInventoryCount(game.currentQuest.itemId);
-          if (questItemCount === 0) return;
-
-          const deliverAmount = Math.min(questItemCount, game.currentQuest.quantity - game.currentQuest.delivered);
-
-          // Remove items from inventory
-          gameState.removeFromInventory(game.currentQuest.itemId, deliverAmount);
-
-          // Update quest progress
-          gameState.updateQuestDelivered(deliverAmount);
-
-          // Check if quest completed
-          if (game.currentQuest.delivered >= game.currentQuest.quantity) {
-            gameState.updateGold(game.currentQuest.reward);
-            gameState.completeQuest();
-
-            // Generate new quest
-            const newQuest = this.generateQuest(game.location, game.seed, game.day);
-            gameState.setQuest(newQuest);
-          }
-        }
       }
 
       // Market Logic - Business rules only, no state mutations
@@ -573,228 +545,295 @@
         }
       }
 
-  
-  
-// Map Renderer - Fixed version
-class MapRenderer {
-  constructor(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
-    
-    // Event listeners
-    canvas.addEventListener("click", this.handleClick.bind(this));
-    canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
-    
-    // Handle window resize
-    window.addEventListener("resize", () => {
-      this.updateCanvasSize();
-      this.positionLocations();
-      this.draw();
-    });
-    
-    // Defer initial setup to ensure DOM is ready
-    requestAnimationFrame(() => {
-      this.updateCanvasSize();
-      this.positionLocations();
-      this.draw();
-    });
-  }
-  
-  updateCanvasSize() {
-    const rect = this.canvas.getBoundingClientRect();
-    
-    // Set canvas internal resolution to match display size
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
-    
-    // Scale context to match device pixel ratio
-    this.ctx.scale(dpr, dpr);
-    
-    // Store display dimensions for calculations
-    this.displayWidth = rect.width;
-    this.displayHeight = rect.height;
-  }
-  
-  positionLocations() {
-    const margin = 80;
-    const w = this.displayWidth - 2 * margin;
-    const h = this.displayHeight - 2 * margin;
-    const minSeparation = 100; // Minimum distance between locations
-    
-    game.locations.forEach((location, i) => {
-      const gridPos = GridSystem.findLocationPosition(i);
-      if (gridPos) {
-        const gridWidth = game.rules.grid.width;
-        const gridHeight = game.rules.grid.height;
-        
-        // Convert grid coordinates to canvas coordinates
-        let x = margin + (gridPos.x / (gridWidth - 1)) * w;
-        let y = margin + (gridPos.y / (gridHeight - 1)) * h;
-        
-        // Add deterministic offset for natural appearance
-        const locationSeed = game.seed + i * 17;
-        const pseudoRand1 = ((locationSeed * 9301 + 49297) % 233280) / 233280;
-        const pseudoRand2 = (((locationSeed + 1) * 9301 + 49297) % 233280) / 233280;
-        
-        const offset = 30;
-        x += (pseudoRand1 - 0.5) * offset;
-        y += (pseudoRand2 - 0.5) * offset;
-        
-        // Ensure minimum separation from other locations
-        let attempts = 0;
-        while (attempts < 50) {
-          let tooClose = false;
-          for (let j = 0; j < i; j++) {
-            const other = game.locations[j];
-            if (other.x !== undefined && other.y !== undefined) {
-              const dist = Math.sqrt((x - other.x) ** 2 + (y - other.y) ** 2);
-              if (dist < minSeparation) {
-                tooClose = true;
-                break;
+      // Quest Delivery Command - Atomic quest delivery transaction
+      class QuestDeliveryCommand {
+        constructor(gameState, currentLocationIndex) {
+          this.gameState = gameState;
+          this.currentLocationIndex = currentLocationIndex;
+          this.executed = false;
+          this.result = null;
+        }
+
+        canExecute() {
+          if (this.executed) return false;
+          if (!this.gameState.game.currentQuest) return false;
+
+          const currentLocationName = this.gameState.game.locations[this.currentLocationIndex].name;
+          if (currentLocationName !== this.gameState.game.currentQuest.targetLocationName) return false;
+
+          const questItemCount = this.gameState.getInventoryCount(this.gameState.game.currentQuest.itemId);
+          return questItemCount > 0;
+        }
+
+        execute() {
+          if (!this.canExecute()) {
+            this.result = { success: false, reason: "Cannot execute delivery" };
+            return this.result;
+          }
+
+          const quest = this.gameState.game.currentQuest;
+          const questItemCount = this.gameState.getInventoryCount(quest.itemId);
+          const deliverAmount = Math.min(questItemCount, quest.quantity - quest.delivered);
+
+          // Atomic transaction - all or nothing
+          try {
+            // Remove items from inventory
+            this.gameState.removeFromInventory(quest.itemId, deliverAmount);
+
+            // Update quest progress
+            this.gameState.updateQuestDelivered(deliverAmount);
+
+            // Check if quest completed and handle completion
+            if (quest.delivered >= quest.quantity) {
+              this.gameState.updateGold(quest.reward);
+              this.gameState.completeQuest();
+
+              // Generate new quest
+              const newQuest = QuestLogic.generateQuest(this.currentLocationIndex, this.gameState.game.seed, this.gameState.game.day);
+              this.gameState.setQuest(newQuest);
+
+              this.result = {
+                success: true,
+                delivered: deliverAmount,
+                completed: true,
+                reward: quest.reward,
+              };
+            } else {
+              this.result = {
+                success: true,
+                delivered: deliverAmount,
+                completed: false,
+              };
+            }
+
+            this.executed = true;
+            return this.result;
+          } catch (error) {
+            // If anything fails, the command failed
+            this.result = { success: false, reason: error.message };
+            return this.result;
+          }
+        }
+
+        getResult() {
+          return this.result;
+        }
+      }
+
+      // Map Renderer - Fixed version
+      class MapRenderer {
+        constructor(canvas) {
+          this.canvas = canvas;
+          this.ctx = canvas.getContext("2d");
+
+          // Event listeners
+          canvas.addEventListener("click", this.handleClick.bind(this));
+          canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
+
+          // Handle window resize
+          window.addEventListener("resize", () => {
+            this.updateCanvasSize();
+            this.positionLocations();
+            this.draw();
+          });
+
+          // Defer initial setup to ensure DOM is ready
+          requestAnimationFrame(() => {
+            this.updateCanvasSize();
+            this.positionLocations();
+            this.draw();
+          });
+        }
+
+        updateCanvasSize() {
+          const rect = this.canvas.getBoundingClientRect();
+
+          // Set canvas internal resolution to match display size
+          const dpr = window.devicePixelRatio || 1;
+          this.canvas.width = rect.width * dpr;
+          this.canvas.height = rect.height * dpr;
+
+          // Scale context to match device pixel ratio
+          this.ctx.scale(dpr, dpr);
+
+          // Store display dimensions for calculations
+          this.displayWidth = rect.width;
+          this.displayHeight = rect.height;
+        }
+
+        positionLocations() {
+          const margin = 80;
+          const w = this.displayWidth - 2 * margin;
+          const h = this.displayHeight - 2 * margin;
+          const minSeparation = 100; // Minimum distance between locations
+
+          game.locations.forEach((location, i) => {
+            const gridPos = GridSystem.findLocationPosition(i);
+            if (gridPos) {
+              const gridWidth = game.rules.grid.width;
+              const gridHeight = game.rules.grid.height;
+
+              // Convert grid coordinates to canvas coordinates
+              let x = margin + (gridPos.x / (gridWidth - 1)) * w;
+              let y = margin + (gridPos.y / (gridHeight - 1)) * h;
+
+              // Add deterministic offset for natural appearance
+              const locationSeed = game.seed + i * 17;
+              const pseudoRand1 = ((locationSeed * 9301 + 49297) % 233280) / 233280;
+              const pseudoRand2 = (((locationSeed + 1) * 9301 + 49297) % 233280) / 233280;
+
+              const offset = 30;
+              x += (pseudoRand1 - 0.5) * offset;
+              y += (pseudoRand2 - 0.5) * offset;
+
+              // Ensure minimum separation from other locations
+              let attempts = 0;
+              while (attempts < 50) {
+                let tooClose = false;
+                for (let j = 0; j < i; j++) {
+                  const other = game.locations[j];
+                  if (other.x !== undefined && other.y !== undefined) {
+                    const dist = Math.sqrt((x - other.x) ** 2 + (y - other.y) ** 2);
+                    if (dist < minSeparation) {
+                      tooClose = true;
+                      break;
+                    }
+                  }
+                }
+
+                if (!tooClose) break;
+
+                // Try a new position with larger offset
+                const newSeed = locationSeed + attempts * 7;
+                const newRand1 = ((newSeed * 9301 + 49297) % 233280) / 233280;
+                const newRand2 = (((newSeed + 1) * 9301 + 49297) % 233280) / 233280;
+
+                x = margin + (gridPos.x / (gridWidth - 1)) * w;
+                y = margin + (gridPos.y / (gridHeight - 1)) * h;
+                x += (newRand1 - 0.5) * (offset + attempts * 10);
+                y += (newRand2 - 0.5) * (offset + attempts * 10);
+
+                attempts++;
+              }
+
+              // Keep in bounds with padding for click radius
+              location.x = Math.max(margin + 50, Math.min(this.displayWidth - margin - 50, x));
+              location.y = Math.max(margin + 50, Math.min(this.displayHeight - margin - 50, y));
+            }
+          });
+        }
+
+        draw() {
+          // Clear with proper dimensions
+          this.ctx.clearRect(0, 0, this.displayWidth, this.displayHeight);
+
+          // Draw roads
+          this.drawRoads();
+
+          // Draw locations
+          game.locations.forEach((location, i) => {
+            const isPlayer = i === game.location;
+            const radius = 40;
+
+            // Circle
+            this.ctx.beginPath();
+            this.ctx.arc(location.x, location.y, radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = isPlayer ? "#4a5a35" : "#2d2d20";
+            this.ctx.fill();
+            this.ctx.strokeStyle = isPlayer ? "#ffd700" : "#6a6a45";
+            this.ctx.lineWidth = isPlayer ? 3 : 1;
+            this.ctx.stroke();
+
+            // Emoji
+            this.ctx.font = "24px Arial";
+            this.ctx.textAlign = "center";
+            this.ctx.textBaseline = "middle";
+            this.ctx.fillStyle = "#f4e4bc";
+            this.ctx.fillText(location.emoji, location.x, location.y);
+
+            // Name
+            this.ctx.font = "bold 14px Arial";
+            this.ctx.textBaseline = "top";
+            this.ctx.fillText(location.name, location.x, location.y + radius + 8);
+          });
+        }
+
+        drawRoads() {
+          this.ctx.strokeStyle = "#8b7355";
+          this.ctx.lineWidth = 2;
+
+          // Connect each location to 2-3 nearest neighbors for visual splines
+          game.locations.forEach((from, i) => {
+            const distances = game.locations
+              .map((to, j) => ({
+                index: j,
+                dist: Math.sqrt((to.x - from.x) ** 2 + (to.y - from.y) ** 2),
+              }))
+              .filter((d) => d.index !== i)
+              .sort((a, b) => a.dist - b.dist)
+              .slice(0, 2);
+
+            distances.forEach(({ index }) => {
+              const to = game.locations[index];
+
+              // Draw curved road
+              const midX = (from.x + to.x) / 2;
+              const midY = (from.y + to.y) / 2;
+              const dx = to.x - from.x;
+              const dy = to.y - from.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              const perpX = (-dy / dist) * 20;
+              const perpY = (dx / dist) * 20;
+
+              this.ctx.beginPath();
+              this.ctx.moveTo(from.x, from.y);
+              this.ctx.quadraticCurveTo(midX + perpX, midY + perpY, to.x, to.y);
+              this.ctx.stroke();
+            });
+          });
+        }
+
+        handleClick(e) {
+          const rect = this.canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          game.locations.forEach((location, i) => {
+            const dist = Math.sqrt((x - location.x) ** 2 + (y - location.y) ** 2);
+            if (dist <= 40) {
+              if (i !== game.location) {
+                travel(i);
+              } else {
+                enterLocation(i);
               }
             }
+          });
+        }
+
+        handleMouseMove(e) {
+          const rect = this.canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          let hoverLocation = null;
+          game.locations.forEach((location, i) => {
+            const dist = Math.sqrt((x - location.x) ** 2 + (y - location.y) ** 2);
+            if (dist <= 40 && i !== game.location) {
+              hoverLocation = i;
+            }
+          });
+
+          if (hoverLocation !== null) {
+            const travelTime = GridSystem.getGridDistance(game.location, hoverLocation);
+            this.canvas.title = `${game.locations[hoverLocation].name} - ${travelTime} days travel`;
+            this.canvas.style.cursor = "pointer";
+          } else {
+            this.canvas.title = "";
+            this.canvas.style.cursor = "default";
           }
-          
-          if (!tooClose) break;
-          
-          // Try a new position with larger offset
-          const newSeed = locationSeed + attempts * 7;
-          const newRand1 = ((newSeed * 9301 + 49297) % 233280) / 233280;
-          const newRand2 = (((newSeed + 1) * 9301 + 49297) % 233280) / 233280;
-          
-          x = margin + (gridPos.x / (gridWidth - 1)) * w;
-          y = margin + (gridPos.y / (gridHeight - 1)) * h;
-          x += (newRand1 - 0.5) * (offset + attempts * 10);
-          y += (newRand2 - 0.5) * (offset + attempts * 10);
-          
-          attempts++;
-        }
-        
-        // Keep in bounds with padding for click radius
-        location.x = Math.max(margin + 50, Math.min(this.displayWidth - margin - 50, x));
-        location.y = Math.max(margin + 50, Math.min(this.displayHeight - margin - 50, y));
-      }
-    });
-  }
-  
-  draw() {
-    // Clear with proper dimensions
-    this.ctx.clearRect(0, 0, this.displayWidth, this.displayHeight);
-    
-    // Draw roads
-    this.drawRoads();
-    
-    // Draw locations
-    game.locations.forEach((location, i) => {
-      const isPlayer = i === game.location;
-      const radius = 40;
-      
-      // Circle
-      this.ctx.beginPath();
-      this.ctx.arc(location.x, location.y, radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = isPlayer ? "#4a5a35" : "#2d2d20";
-      this.ctx.fill();
-      this.ctx.strokeStyle = isPlayer ? "#ffd700" : "#6a6a45";
-      this.ctx.lineWidth = isPlayer ? 3 : 1;
-      this.ctx.stroke();
-      
-      // Emoji
-      this.ctx.font = "24px Arial";
-      this.ctx.textAlign = "center";
-      this.ctx.textBaseline = "middle";
-      this.ctx.fillStyle = "#f4e4bc";
-      this.ctx.fillText(location.emoji, location.x, location.y);
-      
-      // Name
-      this.ctx.font = "bold 14px Arial";
-      this.ctx.textBaseline = "top";
-      this.ctx.fillText(location.name, location.x, location.y + radius + 8);
-    });
-  }
-  
-  drawRoads() {
-    this.ctx.strokeStyle = "#8b7355";
-    this.ctx.lineWidth = 2;
-    
-    // Connect each location to 2-3 nearest neighbors for visual splines
-    game.locations.forEach((from, i) => {
-      const distances = game.locations
-        .map((to, j) => ({
-          index: j,
-          dist: Math.sqrt((to.x - from.x) ** 2 + (to.y - from.y) ** 2),
-        }))
-        .filter((d) => d.index !== i)
-        .sort((a, b) => a.dist - b.dist)
-        .slice(0, 2);
-      
-      distances.forEach(({ index }) => {
-        const to = game.locations[index];
-        
-        // Draw curved road
-        const midX = (from.x + to.x) / 2;
-        const midY = (from.y + to.y) / 2;
-        const dx = to.x - from.x;
-        const dy = to.y - from.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        const perpX = (-dy / dist) * 20;
-        const perpY = (dx / dist) * 20;
-        
-        this.ctx.beginPath();
-        this.ctx.moveTo(from.x, from.y);
-        this.ctx.quadraticCurveTo(midX + perpX, midY + perpY, to.x, to.y);
-        this.ctx.stroke();
-      });
-    });
-  }
-  
-  handleClick(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    game.locations.forEach((location, i) => {
-      const dist = Math.sqrt((x - location.x) ** 2 + (y - location.y) ** 2);
-      if (dist <= 40) {
-        if (i !== game.location) {
-          travel(i);
-        } else {
-          enterLocation(i);
         }
       }
-    });
-  }
-  
-  handleMouseMove(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    let hoverLocation = null;
-    game.locations.forEach((location, i) => {
-      const dist = Math.sqrt((x - location.x) ** 2 + (y - location.y) ** 2);
-      if (dist <= 40 && i !== game.location) {
-        hoverLocation = i;
-      }
-    });
-    
-    if (hoverLocation !== null) {
-      const travelTime = GridSystem.getGridDistance(game.location, hoverLocation);
-      this.canvas.title = `${game.locations[hoverLocation].name} - ${travelTime} days travel`;
-      this.canvas.style.cursor = "pointer";
-    } else {
-      this.canvas.title = "";
-      this.canvas.style.cursor = "default";
-    }
-  }
-}
-
-
-
-
-
-
 
       // Game Functions
       function travel(locationIndex) {
@@ -810,7 +849,9 @@ class MapRenderer {
         gameState.updateDay(travelTime);
 
         // Check quest delivery after arriving
-        QuestLogic.checkQuestDelivery();
+        // ADD THIS INSTEAD
+        const deliveryCommand = new QuestDeliveryCommand(gameState, locationIndex);
+        deliveryCommand.execute();
 
         if (game.day > game.rules.gameplay.maxDays) {
           endGame();
@@ -825,7 +866,11 @@ class MapRenderer {
 
       function enterLocation(locationIndex) {
         // Check quest delivery when entering current location
-        QuestLogic.checkQuestDelivery();
+        // ADD THIS INSTEAD
+const deliveryCommand = new QuestDeliveryCommand(gameState, locationIndex);
+deliveryCommand.execute();
+
+
         updateUI();
         showTrading();
       }
