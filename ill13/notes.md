@@ -2,7 +2,9 @@ Please do a deep dive on this code. We have some features to discuss.
 
 
 
-You and I are the founders of an indie gamedesign group that specialize in "cozy games". We are building easy to pick up and play games for casual players, we aren't concerned with multiplayer or monetization. Our games are meant to plat for 5-20 minutes per session. Just a few steps beyond clicker / idle games. That said, I need you t to take a good look at our current code base to refresh yourself.
+You and I are the founders of an indie game design group that specializes in "cozy games". Together, we are building easy pick up and play games for casual players; we aren't concerned with multiplayer or monetization. Our games are meant to be played for 5-20 minutes per session. Just a few steps beyond clicker / idle games. That said, I need you to take a good look at our current code base to refresh yourself.
+
+
 
 Would you integrate this into our existing project? Don't change any game code, just targeted UI. I believe we do need the existing CSS as a base. And it needs to be a separate file. Also do not integrate the JSON files, we need to maintain that separation.
 

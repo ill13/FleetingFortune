@@ -1,3 +1,4 @@
+
 :root {
     /* Theme Variables - Medieval Pack */
     --theme-bg-primary: linear-gradient(135deg, #1a2f1a, #2d4a2d);
@@ -203,11 +204,11 @@ canvas {
 .quest-item::before {
     content: "📋";
     position: absolute;
-    top: -8px;
-    left: -8px;
+    top: -10px;
+    left: -2px;
     background: var(--theme-border-quest);
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -612,3 +613,4 @@ canvas {
     justify-content: center;
     text-align: center;
 }
+
