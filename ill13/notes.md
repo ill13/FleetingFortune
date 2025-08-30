@@ -1,13 +1,26 @@
-
-
-
-What solution best fits our current architecture?
-
-Please walk me through implementing "Command Pattern with Delivery Transaction". Create the new function, show me where to add it, and what else to remove / change. Do this step by step.
-
-
-
 Please do a deep dive on this code. We have some features to discuss.
+
+
+
+ Would a game designer who's not a programmer benefit from being able to change this value without touching code?
+
+
+
+
+
+
+
+Discuss three professional and architecturally appropriate fixes for "Price calculation inconsistency", no code.
+
+
+
+What solution best fits our current architecture and is the easiest to both implement and maintain?
+
+
+
+Please walk me through implementing "Temporal Market Recovery System". Create the new function, show me where to add it, and what else to remove / change. Do this step by step.
+
+GameState needs to be the single source of truth. Please walk me through implementing "use GameState correctly". What to remove / change. Do this step by step.
 
 
 
